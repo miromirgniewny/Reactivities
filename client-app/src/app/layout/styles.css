@@ -33,3 +33,7 @@ body {
   font-size: 4em;
   font-weight: normal;
 }
+
+.react-datepicker-wrapper {
+  width: 100%;
+}
