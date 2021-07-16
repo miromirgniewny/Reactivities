@@ -16,16 +16,17 @@ import { useEffect } from 'react';
 import LoadingComponent from './LoadingComponent';
 import { observer } from 'mobx-react-lite';
 import ModalContainer from '../common/modals/ModalContainer';
+import ProfilePage from '../../features/profiles/ProfilePage';
 
 
-export default observer(function App() {
+function App() {
 
   const location = useLocation();
   const {commonStore, userStore} = UseStore();
 
   useEffect(() => {
     if (commonStore.token) {
-      userStore.getUser().finally(() => commonStore.setAppLoaded())
+      userStore.getUser().finally(() => commonStore.setAppLoaded());
     } else {
       commonStore.setAppLoaded();
     }
@@ -48,6 +49,7 @@ if (!commonStore.appLoaded) return <LoadingComponent content='Loading app...' />
               <Route exact path='/activities' component={ActivityDashboard}  />
               <Route path='/activities/:id' component={ActivityDetails}  />
               <Route key={location.key} path={['/createActivity', '/manage/:id']} component={ActivityForm}  />
+              <Route path={'/profiles/:username'} component={ProfilePage} />
               <Route path={'/errors'} component={TestErrors} />
               <Route path={'/server-error'} component={ServerError} />
               <Route path={'/login'} component={LoginForm} />
@@ -60,4 +62,6 @@ if (!commonStore.appLoaded) return <LoadingComponent content='Loading app...' />
       />
     </Fragment>
   );
-})
+}
+
+export default observer(App);

@@ -9,7 +9,7 @@ export default class ActivityStore {
     selectedActivity: Activity | undefined = undefined;
     editMode = false;
     loading= false;
-    loadingInitial= false;
+    loadingInitial= true;
 
 
     constructor() {
@@ -32,16 +32,20 @@ export default class ActivityStore {
     }
 
     loadActivities = async () => {
-        this.setLoadingInitial(true);
+        this.loadingInitial =true;
         try {
             const activities = await agent.Activities.list();
             activities.forEach(activity=> {
                 this.setActivity(activity);
               })
-              this.setLoadingInitial(false);
+              runInAction(() => {
+                this.loadingInitial = false;
+              });
         } catch (error) {
             console.log(error);
-            this.setLoadingInitial(false);
+            runInAction(() => {
+                this.loadingInitial = false;
+            });
         }
 
     }
@@ -52,18 +56,20 @@ export default class ActivityStore {
             this.selectedActivity = activity;
             return activity;
         } else {
-            this.setLoadingInitial(true);
+            this.loadingInitial = true;
             try {
                 activity = await agent.Activities.details(id);
                 this.setActivity(activity);
                 runInAction(() => {
                     this.selectedActivity=activity;
-                })
-                this.setLoadingInitial(false);
+                    this.loadingInitial = false;
+                });
                 return activity;
             } catch (error) {
                 console.log(error);
-                this.setLoadingInitial(false);
+                runInAction(() => {
+                    this.loadingInitial = false;
+                });
             }
         }
     }
@@ -82,10 +88,6 @@ export default class ActivityStore {
 
     private getActivity = (id: string) => {
         return this.activityRegistry.get(id);
-    }
-
-    setLoadingInitial = (state:boolean) => {
-        this.loadingInitial = state;
     }
 
     setLoading = (state:boolean) => {
